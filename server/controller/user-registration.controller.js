@@ -11,19 +11,19 @@ const new_register_controller = async (req,res) =>{
         let checkSpecialCharactars = /^(?=.*[@$!%*?&])/;
 
         if(password_size<8){
-            console.log("The length of the password would be greater than 8");
+          return "The length of the password would be greater than 8";
         }
         else if(!password.search(checkLowerCase)){
-            console.log("In the password , it must contains atleast one lowercase letter");
+            return "In the password , it must contains atleast one lowercase letter";
         }
         else if(!password.search(checkUppercase)){
-            console.log("In the password , it must contain atleast one uppercase letter")
+            return "In the password , it must contain atleast one uppercase letter";
         }
         else if(!password.search(checkDigit)){
-            console.log("In the password , it must contain atleast one digit");
+            return "In the password , it must contain atleast one digit";
         }
         else if(!password.search(checkSpecialCharactars)){
-            console.log("In the password , it will must contain atleast one special character");
+          return "In the password , it will must contain atleast one special character";
         }
     }
 
@@ -47,7 +47,8 @@ const new_register_controller = async (req,res) =>{
             errCode:400,
             message:"Failed to register new user"
         });
-        if(!email || !mobile || !password){
+    }
+           if(!email || !mobile || !password){
             return res.status(401).json({
                 success:2,
                 errCode:401,
@@ -55,7 +56,16 @@ const new_register_controller = async (req,res) =>{
             });
 
         }
-    }
+
+        const checkPasswordError = checkPassword(password);
+        // validate the password and handling error using checkPassword function
+     if(checkPasswordError){
+        return res.status(400).json({
+            success:2,
+            errCode:401,
+            message:checkPassword
+        });
+     }    
         
     } catch (error) {
         
