@@ -1,10 +1,11 @@
-require('dotenv').config();
+dotenv.config({path:"./config/.env"});
 
 import {createConnection, createPool} from 'mysql2';
+import dotenv from 'dotenv';
 
 //connect with mysql database
 
-const pool = createPool({
+ const pool = createPool({
     host:process.env.DB_HOST,
     user:process.env.DB_USER,
     password:process.env.DB_PASSWORD,
@@ -24,5 +25,4 @@ pool.getConnection((err,connection)=>{
     if(connection) connection.release();
 });
 
-module.exports = pool;
-
+export default pool;

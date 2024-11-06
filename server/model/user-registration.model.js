@@ -1,39 +1,35 @@
-const pool = require('../config/db.config');
+import pool from '../config/db.config.js';
 
-const new_register = (data,callback)=>{
-      const name = data.name;
-      const email = data.email;
-      const mobile = data.mobile;
-      const password = data.password;
 
-      // Insert query for the new user register
-      const register_new_user_query = `INSERT INTO users (name,mobile,email,password) VALUES(?,?,?,?)`;
-
-      pool.query(register_new_user_query, [name,mobile,email,password],(error,results,fields)=>{
-    if(error) {
-        callback(error);
-    }else{
-        callback(null,results);
-    }
-})
-}
-
-const customer_exist = (data,callback) =>{
+export async function new_register(data){
+    const name = data.name;
     const email = data.email;
     const mobile = data.mobile;
+    const password = data.password;
+    const advanced_password = data.advanced_password
+    
+    // Insert query for the new user register
+    const register_new_user_query = `INSERT INTO users (name,email,mobile,password,advanced_password) VALUES(?,?,?,?,?)`;
 
-    // search query for the new customer 
-    const previous_member_search_query = `SELECT email , mobile FROM test.users WHERE mobile = ? || email = ? `;
-
-    pool.query(previous_member_search_query, [email,mobile], (error,results,fields) =>{
-        if(error){
-            callback(error);
-        }else{
-            callback(null,results);
-        }
-    })
+    try{
+       // Handling and write a logic for handling db query operations for regestaring new user
+       const result = await new Promise((resolve,reject)=>{
+        pool.query(register_new_user_query,[name,email,mobile,password,advanced_password],(error,result)=>{
+            if(error){
+                reject(error);
+            }else{
+                resolve(result);
+            }
+        });
+       });
+       
+       return result;
+    }
+    catch(error){
+        throw new Error(error.message);
+    }
 }
 
-module.exports = {
-    new_register
-}
+
+
+
