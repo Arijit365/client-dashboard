@@ -31,5 +31,27 @@ export async function new_register(data){
 }
 
 
+// write the model for the previous customer registration check API
 
-
+export async function existing_customer_check(data){
+    const email = data.email;
+    const mobile = data.mobile;
+// SQL query to check in database if the both email and mobile number is present
+    const register_customer_check_query = `SELECT email , mobile FROM users WHERE email = ? &&  mobile = ? `;
+    
+    try{
+  const register_customer_check = await new Promise((resolve,reject)=>{
+    pool.query(register_customer_check_query,[email,mobile],(error,result,fields)=>{
+        if(error){
+                reject(error);
+        }
+        else{
+            resolve(result);
+        }
+    })
+  })
+ return register_customer_check.length > 0;  
+    }catch(error){
+        throw new Error(error.message);
+    }
+}

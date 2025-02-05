@@ -1,4 +1,4 @@
-import { new_register } from "../model/user-registration.model.js";
+import { new_register,existing_customer_check} from "../model/user-registration.model.js";
 import {genSaltSync,hashSync} from 'bcrypt'
 
  export async function new_register_controller(req,res){
@@ -116,3 +116,45 @@ import {genSaltSync,hashSync} from 'bcrypt'
     }
 }
 
+// Write the logic for the existing customer check
+export async function existing_customer_check_controller(req,res) {
+    
+    try{
+const email = req.query.email; // Access the email query parameter from url
+const mobile = req.query.mobile; // Access the mobile query parameter from url
+
+if(!email && !mobile){
+    return res.status(401).json({
+        success:0,
+        errCode:401,
+        message:"Email and mobile are both field required"
+    })
+}
+
+const check_existing = await existing_customer_check({email,mobile});
+
+if(check_existing){
+    // console.log(check_existing) 
+    return res.status(201).json({
+        success:1,
+        errCode:201,
+        message:"Customer exist"
+    });
+}
+else{
+  return res.status(404).json({
+    success:0,
+    errCode:404,
+    message:"Customer not found"
+  })
+}
+//catch error
+    }catch(error){
+        return res.status(500).json({
+           success:2,
+           errCode:500,
+           message: "Internal server error",
+           error:error.message || "Unknown error occured"
+        });
+    }
+}

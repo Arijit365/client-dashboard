@@ -14,7 +14,7 @@ function App() {
       <Route path='/success' element={<RegistrationSuccess/>}/>
 <Route path='/main-page' element={<MainDashboard/>}/>
     </Routes>
-    </>
+    </> 
   )
 }
 
