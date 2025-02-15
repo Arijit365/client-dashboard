@@ -2,14 +2,13 @@ import React, { useEffect, useState } from "react";
 import "./LoginSignup.css";
 import { assets } from "../../assets/assets";
 import axiosInstance from "../../../axiosInstance";
-import { useNavigate } from "react-router-dom";
-import RegistrationSuccess from "../../Pages/RegistrationSuccess";
+import { useNavigate  , Link} from "react-router-dom";
 
 export default function LoginSignup() {
   const [action, setAction] = useState("Login");
   const initialSignUpData = { name: "", email: "", mobile: "", password: "" };
   const [signUpInput, setSignUpInput] = useState(initialSignUpData);
-  const [response, setResponse] = useState(""); 
+  const [response, setResponse] = useState(null); 
   const[registrationSuccess,setRegistrationSuccess] = useState(false) // react-router-dom to navigate the page on specific url
   const navigate = useNavigate();
 
@@ -35,7 +34,12 @@ export default function LoginSignup() {
   }
     
     } catch (error) {
-      setResponse("An error occurred during resgistration");
+      if(error.response && error.response.data && error.response.data.message){   
+        setResponse(error.response.data.message);
+      }
+      else{
+        setResponse("An unexpected error is happens")
+      }
     }
   };
 
@@ -99,7 +103,7 @@ export default function LoginSignup() {
         </div>
         {action === "Sign Up" ? null : (
           <div className="forget-password">
-            Didn't remember password? <span>Click Here!</span>
+            Didn't remember password <Link to="/forgot-password" className="forgot-link"> Click here  </Link>
           </div>
         )}
         <div className="submit-form">

@@ -1,5 +1,8 @@
 import { new_register,existing_customer_check} from "../model/user-registration.model.js";
 import {genSaltSync,hashSync} from 'bcrypt'
+import dotenv from 'dotenv'
+dotenv.config({path:'../config/.env'})
+import {transporter} from '../config/mail.js'
 
  export async function new_register_controller(req,res){
   
@@ -27,6 +30,45 @@ import {genSaltSync,hashSync} from 'bcrypt'
           return "Password must contain atleast one special character";
         }
         
+    }
+
+    // Write a function to send a mail when user resgister successfull
+   async  function SendSuccessmail(email,name) {
+      return await new Promise((resolve, reject) => {
+        
+            const mailOptions = {
+                from: process.env.EMAIL,
+                to: email,
+                subject: "User Registration Successful",
+                text: `Your account has been created successfully ${name}.`
+            };
+    
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.error("Error sending email:", error);
+                    reject(error);
+                } else {
+                    console.log("Email Sent:", info.response);
+                    resolve(info.response);
+                }
+            });
+        });
+    }
+    
+//          const mailOptions = {
+//             from:process.env.EMAIL,
+//             to:email,
+//             subject:"User Registration successful",
+//             text:"Your account is created is successful",
+//          }
+// transporter.sendMail(mailOptions,(error,info)=>{
+//     if(error){
+//         console.log(error);
+//     }else{
+//         console.log("Email Sent", +info.response)
+//     }
+// })
+ {
     }
 
        try {
@@ -96,13 +138,19 @@ import {genSaltSync,hashSync} from 'bcrypt'
      // if the registration is successful
     
       if(results){
-        return res.status(201).json({
-            success:1,
-            errCode:201,
-            message:"User registered successfully"
-          });
+           res.status(201).json({
+                        success:1,
+                        errCode:201,
+                        message:"User registered successfully"
+                      });
+// Run email function after the API response
+// Use setImmediate function to sechedule without event loop
+setImmediate(()=>{
+    SendSuccessmail(email,name)
+.then(()=>console.log("Success Email sent to email", email))
+.catch(error=>console.error("Failed to sent email",error))
+})
       }
-    
 
     } catch (error) {
         return res.status(500).json({
