@@ -55,3 +55,9 @@ export async function existing_customer_check(data){
         throw new Error(error.message);
     }
 }
+
+// Write the model for the Login API
+
+export async function customer_login(data){
+ 
+}
