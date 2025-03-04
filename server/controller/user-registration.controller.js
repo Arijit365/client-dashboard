@@ -1,5 +1,5 @@
-import { new_register,existing_customer_check} from "../model/user-registration.model.js";
-import {genSaltSync,hashSync} from 'bcrypt'
+import { new_register,existing_customer_check , customer_login} from "../model/user-registration.model.js";
+import {genSaltSync,hashSync, compare}  from 'bcrypt'
 import dotenv from 'dotenv'
 dotenv.config({path:'../config/.env'})
 import {transporter} from '../config/mail.js'
@@ -205,4 +205,57 @@ else{
            error:error.message || "Unknown error occured"
         });
     }
+}
+
+// Write the logic for the controller of the customer login API
+export async function login_user_controller(req,res) {
+     const email = req.body.email;
+     const password = req.body.password;
+    
+     try{
+     if(!email || !password){
+        return res.status(401).json({
+            success:0,
+            errCode:401,
+            message:"Email and password field can not be blank"
+        })
+    }
+
+     const customer_login_check = await customer_login({email});
+// If the email and password is not there
+     if(!customer_login_check){
+        return res.status(404).json({
+         success:0,
+         errCode:404,
+         message:"Customer not found"
+        });
+    }
+
+    // Password 
+    const match_password = await compare(password, customer_login_check.advanced_password);
+
+    if(!match_password){
+        return res.status(401).json({
+            success:1,
+            errCode:401,
+            message:"Incorrect password, please provide the correct password"
+        })
+    }
+    
+// If the customer email and password is matched
+        return res.status(201).json({
+            success:1,
+            errCode:201,
+            message:"customer is logged in successfully"
+        });
+    
+
+     }catch(error){
+        return res.status(500).json({
+            success:2,
+            errCode:500,
+            message:"Internal server error",
+            errorMessage: error.message || "An unexpected error is happen"
+        })
+     }
 }

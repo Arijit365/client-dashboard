@@ -104,3 +104,15 @@
     background-color: #f9f9f9;
     color: #f105f5;
 }
+.response-error {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  
+  .response-success {
+    color: green;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  

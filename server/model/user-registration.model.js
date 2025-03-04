@@ -1,3 +1,4 @@
+import { compareSync } from 'bcrypt';
 import pool from '../config/db.config.js';
 
 
@@ -59,5 +60,30 @@ export async function existing_customer_check(data){
 // Write the model for the Login API
 
 export async function customer_login(data){
- 
+const email = data.email;
+
+ // SQL Query to retreive password and email for login
+ const login_query = `SELECT email , advanced_password FROM users WHERE email = ? `;
+   try{
+    const login_user_check = await new Promise((resolve,reject)=>{
+        pool.query(login_query,[email],(error,results)=>{
+            if(error){
+         return reject(error)
+            }else{
+                resolve(results)
+            }
+        })
+    })
+
+ // If there is no user
+ if(login_user_check.length === 0){
+    return null;
+ }
+
+ // return the user object 
+ return login_user_check[0];
+}
+   catch(error){
+    throw new Error(error.message);
+   }
 }
